@@ -1,26 +1,28 @@
 package view;
 
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TableView.TableViewSelectionModel;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.ListView;
+import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+
+// Maxwell Wang and Girish Ganesan
 
 public class SongController {
 
 	@FXML
-	TableView<Song> tableView;
-	@FXML
-	TableColumn<Song, String> nameColumn;
-	@FXML
-	TableColumn<Song, String> artistColumn;
+	ListView<String> listView;
 	@FXML
 	Text nameText;
 	@FXML
@@ -36,28 +38,20 @@ public class SongController {
 	@FXML
 	Button deleteButton;
 
-	private ArrayList<Song> initialSongs = new ArrayList<>(Arrays.asList(new Song("Soft Jams", "Sesh", "CS213", "2016"),
-			new Song("G Tunes", "Girish", "Red Album", "2021"), new Song("Mix City", "Maxwell", "Spark", "2020"),
-			new Song("Soft Jams", "Girish", "Red Album", "2021")));
+	// strings in listView
+	private ObservableList<String> obsList;
 
 	public void start(Stage mainStage) {
-		// set sorting columns to false since we have our own way of sorting (see sort
-		// method)
-		nameColumn.setSortable(false);
-		artistColumn.setSortable(false);
+		// add songs from songs.json to obsList
+		obsList = FXCollections.observableArrayList();
+		for (Song song : getSongs()) {
+			obsList.add(songToString(song));
+		}
+		listView.setItems(obsList);
 
-		// describe how to go from Song to String for each column
-		nameColumn.setCellValueFactory(new PropertyValueFactory<>("name")); // will call getName()
-		artistColumn.setCellValueFactory(new PropertyValueFactory<>("artist")); // will call getArtist()
-
-		// populate library with initial songs and sort them
-		ObservableList<Song> songs = FXCollections.observableArrayList(initialSongs);
-		songs = sort(songs);
-		tableView.setItems(songs);
-
-		// select first song
-		TableViewSelectionModel<Song> selectionModel = tableView.getSelectionModel();
-		if (!initialSongs.isEmpty()) {
+		// select first song name and artist if list is not empty
+		MultipleSelectionModel<String> selectionModel = listView.getSelectionModel();
+		if (!obsList.isEmpty()) {
 			selectionModel.select(0);
 		}
 		showDetails();
@@ -66,19 +60,49 @@ public class SongController {
 		selectionModel.selectedIndexProperty().addListener((obs, oldVal, newVal) -> showDetails());
 	}
 
-	// sorts songs in alphabetical order by name and then artist
-	private ObservableList<Song> sort(ObservableList<Song> songs) {
-		songs.sort((song1, song2) -> song1.getName().compareTo(song2.getName()) != 0
-				? song1.getName().compareTo(song2.getName())
-				: song1.getArtist().compareTo(song2.getArtist()));
+	private ArrayList<Song> getSongs() {
+		ArrayList<Song> songs = new ArrayList<>();
+		JSONParser parser = new JSONParser();
+		JSONArray a = null;
+		try {
+			a = (JSONArray) parser.parse(new FileReader("src/data/songs.json"));
+		} catch (IOException | ParseException e) {
+			e.printStackTrace();
+		}
+		for (Object o : a) {
+			songs.add(new Song((JSONObject) o));
+		}
 		return songs;
+
+	}
+
+	private String songToString(Song song) {
+		return song.getName() + " | " + song.getArtist();
+	}
+
+	private String stringToName(String s) {
+		return s.substring(0, s.indexOf('|') - 1);
+	}
+
+	private String stringToArtist(String s) {
+		return s.substring(s.indexOf('|') + 2);
+	}
+
+	private Song stringToSong(String s) {
+		for (Song song : getSongs()) {
+			if (song.getName().equals(stringToName(s)) && song.getArtist().equals(stringToArtist(s))) {
+				return song;
+			}
+		}
+		return null;
 	}
 
 	// shows details of selected song
 	private void showDetails() {
-		TableViewSelectionModel<Song> selectionModel = tableView.getSelectionModel();
-		if (!selectionModel.isEmpty()) {
-			Song selectedSong = selectionModel.getSelectedItem();
+		MultipleSelectionModel<String> selectionModel = listView.getSelectionModel();
+		if (!obsList.isEmpty()) {
+			String selectedString = selectionModel.getSelectedItem();
+			Song selectedSong = stringToSong(selectedString);
 			nameText.setText(selectedSong.getName());
 			artistText.setText(selectedSong.getArtist());
 			albumText.setText(selectedSong.getAlbum());

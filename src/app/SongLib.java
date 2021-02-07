@@ -7,7 +7,9 @@ import javafx.scene.control.SplitPane;
 import javafx.stage.Stage;
 import view.SongController;
 
-public class SongApp extends Application {
+// Maxwell Wang and Girish Ganesan
+
+public class SongLib extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
