@@ -12,14 +12,20 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+
 // Maxwell Wang and Girish Ganesan
 
-public class SongController {
+public class SongController implements EventHandler<ActionEvent> {
 
 	@FXML
 	ListView<String> listView;
@@ -55,9 +61,14 @@ public class SongController {
 			selectionModel.select(0);
 		}
 		showDetails();
-
+		
 		// set listener for items
 		selectionModel.selectedIndexProperty().addListener((obs, oldVal, newVal) -> showDetails());
+		
+		// set up event handling for add, edit, and delete buttons
+		addButton.setOnAction(this);
+		editButton.setOnAction(this);
+		deleteButton.setOnAction(this);
 	}
 
 	private ArrayList<Song> getSongs() {
@@ -97,8 +108,40 @@ public class SongController {
 		return null;
 	}
 
+	// handles add, edit, and delete button presses
+	public void handle(ActionEvent e) {
+		Button b = (Button)e.getSource();
+		if (b == addButton) addSong();
+		else if (b == editButton) editSong();
+		else deleteSong();
+	}
+	
+	private void addSong() {
+		
+	}
+	private void editSong() {
+		
+	}
+	private void deleteSong() {
+		MultipleSelectionModel<String> selectionModel = listView.getSelectionModel();
+		String selectedString = selectionModel.getSelectedItem();
+		int selectedIndex = selectionModel.getSelectedIndex();
+		
+		Alert deleteAlert = new Alert(AlertType.CONFIRMATION, 
+				"Are you sure you want to delete " + selectedString + "?", ButtonType.YES, ButtonType.NO);
+		deleteAlert.showAndWait();
+		if (deleteAlert.getResult() == ButtonType.YES) {
+			obsList.remove(selectedIndex);
+			selectionModel.select((selectedIndex < obsList.size()) ? selectedIndex : obsList.size() - 1);
+			showDetails();
+			// remove from json too
+		}
+	}
+	
+	
 	// shows details of selected song
 	private void showDetails() {
+		// NEEDS TO BE ALPHABETICAL
 		MultipleSelectionModel<String> selectionModel = listView.getSelectionModel();
 		if (!obsList.isEmpty()) {
 			String selectedString = selectionModel.getSelectedItem();
@@ -107,6 +150,11 @@ public class SongController {
 			artistText.setText(selectedSong.getArtist());
 			albumText.setText(selectedSong.getAlbum());
 			yearText.setText(selectedSong.getYear());
+		} else {
+			nameText.setText("");
+			artistText.setText("");
+			albumText.setText("");
+			yearText.setText("");
 		}
 	}
 
