@@ -3,6 +3,8 @@ package view;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -15,7 +17,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MultipleSelectionModel;
-import javafx.scene.text.Text;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import javafx.event.ActionEvent;
@@ -30,20 +32,20 @@ public class SongController implements EventHandler<ActionEvent> {
 	@FXML
 	ListView<String> listView;
 	@FXML
-	Text nameText;
+	TextField nameText;
 	@FXML
-	Text artistText;
+	TextField artistText;
 	@FXML
-	Text albumText;
+	TextField albumText;
 	@FXML
-	Text yearText;
+	TextField yearText;
 	@FXML
 	Button addButton;
 	@FXML
 	Button editButton;
 	@FXML
 	Button deleteButton;
-
+			
 	// strings in listView
 	private ObservableList<String> obsList;
 
@@ -53,6 +55,7 @@ public class SongController implements EventHandler<ActionEvent> {
 		for (Song song : getSongs()) {
 			obsList.add(songToString(song));
 		}
+		Collections.sort(obsList);
 		listView.setItems(obsList);
 
 		// select first song name and artist if list is not empty
@@ -107,21 +110,56 @@ public class SongController implements EventHandler<ActionEvent> {
 		}
 		return null;
 	}
-
+	
+	// control editable field of song information TextFields
+	private void enableAllTextfields(boolean enable) {
+		nameText.setEditable(enable);
+		artistText.setEditable(enable);
+		albumText.setEditable(enable);
+		yearText.setEditable(enable);
+	}
+	
+	private boolean allFieldsFilled() {
+		if (nameText.isEditable()) {
+			return (!nameText.getText().isEmpty() && !artistText.getText().isEmpty() && 
+					!albumText.getText().isEmpty() && !yearText.getText().isEmpty());
+		}
+		return false;
+	}
+	
 	// handles add, edit, and delete button presses
 	public void handle(ActionEvent e) {
 		Button b = (Button)e.getSource();
-		if (b == addButton) addSong();
-		else if (b == editButton) editSong();
-		else deleteSong();
+		if (b == deleteButton) deleteSong();
+		else {
+			if (allFieldsFilled()) {
+				if (b == editButton) editSong();
+				else addSong();
+			} else {
+				enableAllTextfields(true);
+			}
+		}
 	}
+	
+	// deal with json at the end -- save whole file again
 	
 	private void addSong() {
 		
-	}
-	private void editSong() {
 		
+		
+		enableAllTextfields(false);
 	}
+	
+	private void editSong() {
+		MultipleSelectionModel<String> selectionModel = listView.getSelectionModel();
+		String selectedString = selectionModel.getSelectedItem();
+		int selectedIndex = selectionModel.getSelectedIndex();
+		
+		
+		
+		enableAllTextfields(false);
+	}
+	
 	private void deleteSong() {
 		MultipleSelectionModel<String> selectionModel = listView.getSelectionModel();
 		String selectedString = selectionModel.getSelectedItem();
@@ -134,27 +172,28 @@ public class SongController implements EventHandler<ActionEvent> {
 			obsList.remove(selectedIndex);
 			selectionModel.select((selectedIndex < obsList.size()) ? selectedIndex : obsList.size() - 1);
 			showDetails();
-			// remove from json too
 		}
 	}
 	
-	
 	// shows details of selected song
 	private void showDetails() {
-		// NEEDS TO BE ALPHABETICAL
 		MultipleSelectionModel<String> selectionModel = listView.getSelectionModel();
 		if (!obsList.isEmpty()) {
 			String selectedString = selectionModel.getSelectedItem();
 			Song selectedSong = stringToSong(selectedString);
+			enableAllTextfields(true);
 			nameText.setText(selectedSong.getName());
 			artistText.setText(selectedSong.getArtist());
 			albumText.setText(selectedSong.getAlbum());
 			yearText.setText(selectedSong.getYear());
+			enableAllTextfields(false);
 		} else {
+			enableAllTextfields(true);
 			nameText.setText("");
 			artistText.setText("");
 			albumText.setText("");
 			yearText.setText("");
+			enableAllTextfields(false);
 		}
 	}
 

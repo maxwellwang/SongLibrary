@@ -1,27 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Text?>
 
-<SplitPane dividerPositions="0.6310096153846154, 0.9146634615384616" focusTraversable="true" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.SongController">
+<SplitPane dividerPositions="0.6305732484076433, 0.9076433121019107" focusTraversable="true" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.SongController">
    <items>
       <AnchorPane>
          <children>
             <ListView fx:id="listView" layoutY="-14.0" prefHeight="200.0" prefWidth="386.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
          </children>
       </AnchorPane>
-      <AnchorPane>
+      <AnchorPane prefWidth="239.0">
          <children>
-            <GridPane prefHeight="200.0" prefWidth="204.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <GridPane prefHeight="200.0" prefWidth="226.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0">
               <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="125.0" minWidth="10.0" prefWidth="125.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="125.0" minWidth="10.0" prefWidth="125.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="155.33329264322919" minWidth="10.0" prefWidth="61.66666666666667" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="170.00004069010413" minWidth="10.0" prefWidth="129.0" />
               </columnConstraints>
               <rowConstraints>
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -31,20 +33,24 @@
               </rowConstraints>
                <children>
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Name:" GridPane.halignment="CENTER" />
-                  <Text fx:id="nameText" strokeType="OUTSIDE" strokeWidth="0.0" text="No song selected" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Artist:" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
-                  <Text fx:id="artistText" strokeType="OUTSIDE" strokeWidth="0.0" text="No song selected" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Album:" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
-                  <Text fx:id="albumText" strokeType="OUTSIDE" strokeWidth="0.0" text="No song selected" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Year:" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
-                  <Text fx:id="yearText" strokeType="OUTSIDE" strokeWidth="0.0" text="No song selected" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
+                  <TextField fx:id="nameText" editable="false" minWidth="-Infinity" prefHeight="25.0" prefWidth="19.0" promptText="Name" GridPane.columnIndex="1" />
+                  <TextField fx:id="artistText" editable="false" prefHeight="25.0" prefWidth="19.0" promptText="Artist" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                     <opaqueInsets>
+                        <Insets left="20.0" top="20.0" />
+                     </opaqueInsets>
+                  </TextField>
+                  <TextField fx:id="albumText" editable="false" minWidth="-Infinity" prefHeight="25.0" prefWidth="87.0" promptText="Album" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <TextField fx:id="yearText" editable="false" minWidth="-Infinity" prefHeight="25.0" prefWidth="93.0" promptText="Year" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                </children>
             </GridPane>
          </children>
       </AnchorPane>
       <AnchorPane prefHeight="200.0" prefWidth="200.0">
          <children>
-            <GridPane prefHeight="200.0" prefWidth="84.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <GridPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
               </columnConstraints>
