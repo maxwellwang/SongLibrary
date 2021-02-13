@@ -36,14 +36,14 @@
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Artist:" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Album:" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Year:" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
-                  <TextField fx:id="nameText" editable="false" minWidth="-Infinity" prefHeight="25.0" prefWidth="19.0" promptText="Name" GridPane.columnIndex="1" />
-                  <TextField fx:id="artistText" editable="false" prefHeight="25.0" prefWidth="19.0" promptText="Artist" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                  <TextField fx:id="nameText" disable="true" minWidth="-Infinity" prefHeight="25.0" prefWidth="19.0" promptText="Name" GridPane.columnIndex="1" />
+                  <TextField fx:id="artistText" disable="true" prefHeight="25.0" prefWidth="19.0" promptText="Artist" GridPane.columnIndex="1" GridPane.rowIndex="1">
                      <opaqueInsets>
                         <Insets left="20.0" top="20.0" />
                      </opaqueInsets>
                   </TextField>
-                  <TextField fx:id="albumText" editable="false" minWidth="-Infinity" prefHeight="25.0" prefWidth="87.0" promptText="Album" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                  <TextField fx:id="yearText" editable="false" minWidth="-Infinity" prefHeight="25.0" prefWidth="93.0" promptText="Year" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <TextField fx:id="albumText" disable="true" minWidth="-Infinity" prefHeight="25.0" prefWidth="87.0" promptText="Album" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <TextField fx:id="yearText" disable="true" minWidth="-Infinity" prefHeight="25.0" prefWidth="93.0" promptText="Year" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                </children>
             </GridPane>
          </children>
@@ -58,11 +58,13 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
                   <Button fx:id="addButton" mnemonicParsing="false" text="Add" GridPane.halignment="CENTER" />
                   <Button fx:id="editButton" mnemonicParsing="false" text="Edit" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
                   <Button fx:id="deleteButton" mnemonicParsing="false" text="Delete" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+                  <Button fx:id="cancelButton" mnemonicParsing="false" text="Cancel" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
                </children>
             </GridPane>
          </children>
