@@ -1,6 +1,7 @@
 package view;
 
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -229,6 +230,21 @@ public class SongController implements EventHandler<ActionEvent> {
 		deleteAlert.showAndWait();
 		if (deleteAlert.getResult() == ButtonType.YES) {
 			obsList.remove(selectedIndex);
+			JSONParser parser = new JSONParser();
+			JSONArray a = null;
+			try {
+				a = (JSONArray) parser.parse(new FileReader("src/data/songs.json"));
+				a.remove(selectedIndex);
+				//Write JSON file
+		        try (FileWriter file = new FileWriter("src/data/songs.json")) {
+		            file.write(a.toJSONString());
+		            file.flush();
+		        } catch (IOException e) {
+		            e.printStackTrace();
+		        }
+			} catch (IOException | ParseException e) {
+				e.printStackTrace();
+			}
 			selectionModel.select((selectedIndex < obsList.size()) ? selectedIndex : obsList.size() - 1);
 		}
 	}
