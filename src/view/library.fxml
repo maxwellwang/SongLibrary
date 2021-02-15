@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Text?>
 
-<SplitPane dividerPositions="0.6305732484076433, 0.9076433121019107" focusTraversable="true" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.SongController">
+<SplitPane dividerPositions="0.6305732484076433, 0.9076433121019107" focusTraversable="true" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.SongController">
    <items>
       <AnchorPane>
          <children>

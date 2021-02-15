@@ -114,7 +114,7 @@ public class SongController implements EventHandler<ActionEvent> {
 			}
 		});
 	}
-	
+
 	private void sortSongs() {
 		songs.sort(new Comparator<Song>() {
 			public int compare(Song a, Song b) {
@@ -323,7 +323,7 @@ public class SongController implements EventHandler<ActionEvent> {
 			writeToJSON();
 		}
 	}
-	
+
 	private void writeToJSON() {
 		JSONArray a = new JSONArray();
 		for (Song song : songs) {
@@ -335,12 +335,12 @@ public class SongController implements EventHandler<ActionEvent> {
 			a.add(obj);
 		}
 		try {
-	         FileWriter file = new FileWriter("src/data/songs.json");
-	         file.write(a.toJSONString());
-	         file.close();
-	      } catch (IOException e) {
-	         e.printStackTrace();
-	      }
+			FileWriter file = new FileWriter("src/data/songs.json");
+			file.write(a.toJSONString());
+			file.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	// shows details of selected song in TextFields
