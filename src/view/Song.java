@@ -22,7 +22,7 @@ public class Song {
 	}
 
 	public Song(JSONObject jo) {
-		this((String) jo.get("name"), (String) jo.get("artist"), (String) jo.get("album"), Integer.parseInt((String) jo.get("year")));
+		this((String) jo.get("name"), (String) jo.get("artist"), (String) jo.get("album"), (int) (long) jo.get("year"));
 	}
 
 	public String getName() {
@@ -56,7 +56,7 @@ public class Song {
 	public void setYear(int year) {
 		this.year = year;
 	}
-	
+
 	public String toString() {
 		return name + " by " + artist + " in " + album + " " + year;
 	}

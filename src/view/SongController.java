@@ -4,7 +4,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -48,9 +47,9 @@ public class SongController implements EventHandler<ActionEvent> {
 	Button deleteButton;
 	@FXML
 	Button cancelButton;
-	
+
 	ArrayList<Song> songs;
-	
+
 	// strings in listView
 	private ObservableList<String> obsList;
 
@@ -70,10 +69,10 @@ public class SongController implements EventHandler<ActionEvent> {
 			selectionModel.select(0);
 		}
 		showDetails();
-		
+
 		// set listener for items
 		selectionModel.selectedIndexProperty().addListener((obs, oldVal, newVal) -> showDetails());
-		
+
 		// set up event handling for add, edit, and delete buttons
 		addButton.setOnAction(this);
 		editButton.setOnAction(this);
@@ -116,7 +115,7 @@ public class SongController implements EventHandler<ActionEvent> {
 		}
 		return null;
 	}
-	
+
 	// control editable field of song information TextFields
 	private void enableAllTextfields(boolean enable) {
 		nameText.setDisable(!enable);
@@ -124,21 +123,26 @@ public class SongController implements EventHandler<ActionEvent> {
 		albumText.setDisable(!enable);
 		yearText.setDisable(!enable);
 	}
-	
+
 	private boolean minFieldsFilled() {
 		if (!nameText.isDisabled()) {
 			return (!nameText.getText().isEmpty() && !artistText.getText().isEmpty());
 		}
 		return false;
 	}
-	
+
 	private boolean duplicateCheck(Song newSong, String old) {
-		//System.out.println(old + "/" + songToString(newSong));
-		if (songToString(newSong).equals(old)) { return false; }
-		
+		// System.out.println(old + "/" + songToString(newSong));
+		if (songToString(newSong).equals(old)) {
+			return false;
+		}
+
 		boolean duplicate = false;
 		for (Song song : songs) {
-			if (songToString(song).equals(songToString(newSong))) { duplicate = true; break; }
+			if (songToString(song).equals(songToString(newSong))) {
+				duplicate = true;
+				break;
+			}
 		}
 		if (duplicate) {
 			Alert deleteAlert = new Alert(AlertType.ERROR, "Duplicate song-artist pair detected.");
@@ -146,63 +150,92 @@ public class SongController implements EventHandler<ActionEvent> {
 		}
 		return duplicate;
 	}
-	
+
 	// handles add, edit, and delete button presses
 	public void handle(ActionEvent e) {
-		Button b = (Button)e.getSource();
-		if (b == deleteButton) deleteSong();
+		Button b = (Button) e.getSource();
+		if (b == deleteButton)
+			deleteSong();
 		else if (b == cancelButton) {
 			enableAllTextfields(false);
 			showDetails();
 		} else {
 			if (minFieldsFilled()) {
-				if (b == editButton) editSong();
-				else addSong();
+				if (b == editButton)
+					editSong();
+				else
+					addSong();
 			} else {
 				if ((b == editButton || b == addButton) && (!nameText.isDisabled())) {
-					Alert fieldsNotFilledAlert = new Alert(AlertType.ERROR, 
-							"Name and Artist fields must be filled.");
+					Alert fieldsNotFilledAlert = new Alert(AlertType.ERROR, "Name and Artist fields must be filled.");
 					fieldsNotFilledAlert.showAndWait();
 				}
 				enableAllTextfields(true);
 			}
 		}
 	}
-	
+
 	// deal with json at the end -- save whole file again
-	
+
 	private void addSong() {
 		MultipleSelectionModel<String> selectionModel = listView.getSelectionModel();
-		Alert yearNotIntegerAlert = new Alert(AlertType.ERROR, 
-				"Year must be a positive integer.");
+		Alert yearNotIntegerAlert = new Alert(AlertType.ERROR, "Year must be a positive integer.");
+		Alert illegalBarAlert = new Alert(AlertType.ERROR, "Name, artist, and album cannot have | in them.");
 		int year = 0;
-		try { year = Integer.parseInt(yearText.getText()); }
-		catch (NumberFormatException e) { yearNotIntegerAlert.showAndWait(); } 
-		if (year < 1) 
+		try {
+			year = Integer.parseInt(yearText.getText());
+		} catch (NumberFormatException e) {
 			yearNotIntegerAlert.showAndWait();
-		else {
+		}
+		if (year < 1) {
+			yearNotIntegerAlert.showAndWait();
+		} else if (nameText.getText().contains("|") || artistText.getText().contains("|")
+				|| albumText.getText().contains("|")) {
+			illegalBarAlert.showAndWait();
+		} else {
 			Song newSong = new Song(nameText.getText(), artistText.getText(), albumText.getText(), year);
 			if (!duplicateCheck(newSong, null)) {
 				songs.add(newSong);
 				obsList.add(songToString(newSong));
 				obsList.sort(null);
-			
+				JSONArray a = new JSONArray();
+				for (String s : obsList) {
+					JSONObject obj = new JSONObject();
+					Song song = stringToSong(s);
+					obj.put("name", song.getName());
+					obj.put("artist", song.getArtist());
+					obj.put("album", song.getAlbum());
+					obj.put("year", song.getYear());
+					a.add(obj);
+				}
+				try (FileWriter file = new FileWriter("src/data/songs.json")) {
+					file.write(a.toJSONString());
+					file.flush();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 				selectionModel.select(obsList.indexOf(songToString(newSong)));
 			}
 		}
 	}
-	
+
 	private void editSong() {
 		MultipleSelectionModel<String> selectionModel = listView.getSelectionModel();
 		String removedName = selectionModel.getSelectedItem();
-		Alert yearNotIntegerAlert = new Alert(AlertType.ERROR, 
-				"Year must be a positive integer.");
+		Alert yearNotIntegerAlert = new Alert(AlertType.ERROR, "Year must be a positive integer.");
+		Alert illegalBarAlert = new Alert(AlertType.ERROR, "Name, artist, and album cannot have | in them.");
 		int year = 0;
-		try { year = Integer.parseInt(yearText.getText()); }
-		catch (NumberFormatException e) { yearNotIntegerAlert.showAndWait(); } 
-		if (year < 1) 
+		try {
+			year = Integer.parseInt(yearText.getText());
+		} catch (NumberFormatException e) {
 			yearNotIntegerAlert.showAndWait();
-		else {	
+		}
+		if (year < 1) {
+			yearNotIntegerAlert.showAndWait();
+		} else if (nameText.getText().contains("|") || artistText.getText().contains("|")
+				|| albumText.getText().contains("|")) {
+			illegalBarAlert.showAndWait();
+		} else {
 			Song newSong = new Song(nameText.getText(), artistText.getText(), albumText.getText(), year);
 			if (!duplicateCheck(newSong, removedName)) {
 				for (Song song : songs) {
@@ -215,17 +248,33 @@ public class SongController implements EventHandler<ActionEvent> {
 				songs.add(newSong);
 				obsList.add(songToString(newSong));
 				obsList.sort(null);
+				JSONArray a = new JSONArray();
+				for (String s : obsList) {
+					JSONObject obj = new JSONObject();
+					Song song = stringToSong(s);
+					obj.put("name", song.getName());
+					obj.put("artist", song.getArtist());
+					obj.put("album", song.getAlbum());
+					obj.put("year", song.getYear());
+					a.add(obj);
+				}
+				try (FileWriter file = new FileWriter("src/data/songs.json")) {
+					file.write(a.toJSONString());
+					file.flush();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 				selectionModel.select(obsList.indexOf(songToString(newSong)));
 			}
 		}
 	}
-	
+
 	private void deleteSong() {
 		MultipleSelectionModel<String> selectionModel = listView.getSelectionModel();
 		String selectedString = selectionModel.getSelectedItem();
 		int selectedIndex = selectionModel.getSelectedIndex();
-		
-		Alert deleteAlert = new Alert(AlertType.CONFIRMATION, 
+
+		Alert deleteAlert = new Alert(AlertType.CONFIRMATION,
 				"Are you sure you want to delete \"" + selectedString + "\"?", ButtonType.YES, ButtonType.NO);
 		deleteAlert.showAndWait();
 		if (deleteAlert.getResult() == ButtonType.YES) {
@@ -235,20 +284,19 @@ public class SongController implements EventHandler<ActionEvent> {
 			try {
 				a = (JSONArray) parser.parse(new FileReader("src/data/songs.json"));
 				a.remove(selectedIndex);
-				//Write JSON file
-		        try (FileWriter file = new FileWriter("src/data/songs.json")) {
-		            file.write(a.toJSONString());
-		            file.flush();
-		        } catch (IOException e) {
-		            e.printStackTrace();
-		        }
+				try (FileWriter file = new FileWriter("src/data/songs.json")) {
+					file.write(a.toJSONString());
+					file.flush();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			} catch (IOException | ParseException e) {
 				e.printStackTrace();
 			}
 			selectionModel.select((selectedIndex < obsList.size()) ? selectedIndex : obsList.size() - 1);
 		}
 	}
-	
+
 	// shows details of selected song
 	private void showDetails() {
 		MultipleSelectionModel<String> selectionModel = listView.getSelectionModel();
