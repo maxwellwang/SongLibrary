@@ -89,6 +89,12 @@ public class SongController implements EventHandler<ActionEvent> {
 		editButton.setOnAction(this);
 		deleteButton.setOnAction(this);
 		cancelButton.setOnAction(this);
+
+		// only able to add song or cancel right now
+		addButton.setDisable(false);
+		editButton.setDisable(true);
+		deleteButton.setDisable(true);
+		enableAllTextfields(false);
 	}
 
 	// called once, ArrayList of active Songs is stored and updated
@@ -235,23 +241,50 @@ public class SongController implements EventHandler<ActionEvent> {
 			deleteButton.setDisable(false);
 			enableAllTextfields(false);
 			showDetails();
+			if (songs.isEmpty()) {
+				addButton.setDisable(false);
+				editButton.setDisable(true);
+				deleteButton.setDisable(true);
+				if (b == editButton || b == deleteButton) {
+					Alert noSongsAlert = new Alert(AlertType.ERROR, "No song selected.");
+					noSongsAlert.showAndWait();
+				}
+				if (b == addButton) {
+					enableAllTextfields(true);
+				}
+			}
 		} else {
 			// deals with add and edit button presses
 			if (minFieldsFilled()) {
 				// occurs on second press, when fields are filled
-				if (b == editButton)
+				if (b == editButton) {
 					editSong();
-				else
+				} else {
 					addSong();
+				}
 			} else {
 				// occurs on first press, to enable fields for data entry
 				addButton.setDisable(b != addButton);
 				editButton.setDisable(b != editButton);
 				deleteButton.setDisable(true);
 
+				
+
 				if ((b == editButton || b == addButton) && (!nameText.isDisabled())) {
 					Alert fieldsNotFilledAlert = new Alert(AlertType.ERROR, "Name and Artist fields must be filled.");
 					fieldsNotFilledAlert.showAndWait();
+				}
+				if (songs.isEmpty()) {
+					addButton.setDisable(false);
+					editButton.setDisable(true);
+					deleteButton.setDisable(true);
+					if (b == editButton || b == deleteButton) {
+						Alert noSongsAlert = new Alert(AlertType.ERROR, "No song selected.");
+						noSongsAlert.showAndWait();
+					}
+					if (b == addButton) {
+						enableAllTextfields(true);
+					}
 				}
 				enableAllTextfields(true);
 				if (b == addButton) {
@@ -260,17 +293,24 @@ public class SongController implements EventHandler<ActionEvent> {
 					albumText.clear();
 					yearText.clear();
 				}
+
 			}
 		}
 	}
 
 	// creates a new Song, and if there are no conflicts it is added to the library
 	private void addSong() {
-		int year = positiveYearInput();
 		String name = validNameInput();
 		String artist = validArtistInput();
-		String album = validAlbumInput();
-		if (year > 0 && !name.contains("|") && !artist.contains("|") && !album.contains("|")) {
+		String album = "";
+		if (!albumText.getText().isEmpty()) {
+			album = validAlbumInput();
+		}
+		int year = 0;
+		if (!yearText.getText().isEmpty()) {
+			year = positiveYearInput();
+		}
+		if (year >= 0 && !name.contains("|") && !artist.contains("|") && !album.contains("|")) {
 			Song newSong = new Song(name.strip(), artist.strip(), album.strip(), year);
 			if (!duplicateCheck(newSong, null)) {
 				songs.add(newSong);
@@ -280,20 +320,26 @@ public class SongController implements EventHandler<ActionEvent> {
 				writeToJSON();
 				selectionModel.select(obsList.indexOf(songToString(newSong)));
 			}
+			editButton.setDisable(false);
+			deleteButton.setDisable(false);
 		}
 
-		editButton.setDisable(false);
-		deleteButton.setDisable(false);
 	}
 
 	// edits fields of an old Song, given no conflicts with another Song
 	private void editSong() {
 		String removedName = selectionModel.getSelectedItem();
-		int year = positiveYearInput();
 		String name = validNameInput();
 		String artist = validArtistInput();
-		String album = validAlbumInput();
-		if (year > 0 && !name.contains("|") && !artist.contains("|") && !album.contains("|")) {
+		String album = "";
+		if (!albumText.getText().isEmpty()) {
+			album = validAlbumInput();
+		}
+		int year = 0;
+		if (!yearText.getText().isEmpty()) {
+			year = positiveYearInput();
+		}
+		if (year >= 0 && !name.contains("|") && !artist.contains("|") && !album.contains("|")) {
 			Song newSong = new Song(nameText.getText().strip(), artistText.getText().strip(),
 					albumText.getText().strip(), year);
 			if (!duplicateCheck(newSong, removedName)) {
@@ -311,10 +357,9 @@ public class SongController implements EventHandler<ActionEvent> {
 				writeToJSON();
 				selectionModel.select(obsList.indexOf(songToString(newSong)));
 			}
+			addButton.setDisable(false);
+			deleteButton.setDisable(false);
 		}
-
-		addButton.setDisable(false);
-		deleteButton.setDisable(false);
 	}
 
 	// deletes a song after showing a confirmation popup
@@ -330,6 +375,11 @@ public class SongController implements EventHandler<ActionEvent> {
 			selectionModel.select((selectedIndex < obsList.size()) ? selectedIndex : obsList.size() - 1);
 			songs.remove(selectedIndex);
 			writeToJSON();
+		}
+		if (songs.isEmpty()) {
+			addButton.setDisable(false);
+			editButton.setDisable(true);
+			deleteButton.setDisable(true);
 		}
 	}
 
@@ -362,7 +412,11 @@ public class SongController implements EventHandler<ActionEvent> {
 				nameText.setText(selectedSong.getName());
 				artistText.setText(selectedSong.getArtist());
 				albumText.setText(selectedSong.getAlbum());
-				yearText.setText("" + selectedSong.getYear());
+				if (selectedSong.getYear() == 0) {
+					yearText.setText("");
+				} else {
+					yearText.setText("" + selectedSong.getYear());
+				}
 				enableAllTextfields(false);
 			}
 		} else {
