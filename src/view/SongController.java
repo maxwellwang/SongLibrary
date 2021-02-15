@@ -230,6 +230,9 @@ public class SongController implements EventHandler<ActionEvent> {
 		if (b == deleteButton) {
 			deleteSong();
 		} else if (b == cancelButton) {
+			addButton.setDisable(false);
+			editButton.setDisable(false);
+			deleteButton.setDisable(false);
 			enableAllTextfields(false);
 			showDetails();
 		} else {
@@ -251,6 +254,12 @@ public class SongController implements EventHandler<ActionEvent> {
 					fieldsNotFilledAlert.showAndWait();
 				}
 				enableAllTextfields(true);
+				if (b == addButton) {
+					nameText.clear();
+					artistText.clear();
+					albumText.clear();
+					yearText.clear();
+				}
 			}
 		}
 	}
